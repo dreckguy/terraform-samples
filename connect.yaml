@@ -1,0 +1,177 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    torque-cluster-id: dcd6f13d-96d8-46f0-83b1-de01b79bccc5
+  name: torque-agent-sa-d22a0e
+  namespace: ophirus-agent
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    torque-cluster-id: dcd6f13d-96d8-46f0-83b1-de01b79bccc5
+  name: torque-sidecar-sa-d22a0e
+  namespace: ophirus-sandboxes
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    torque-cluster-id: dcd6f13d-96d8-46f0-83b1-de01b79bccc5
+  name: torque-cr-r-d22a0e
+rules:
+- apiGroups:
+  - storage.k8s.io
+  resources:
+  - storageclasses
+  verbs:
+  - list
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    torque-cluster-id: dcd6f13d-96d8-46f0-83b1-de01b79bccc5
+  name: torque-nr-r-d22a0e
+rules:
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - replicasets
+  verbs:
+  - '*'
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - '*'
+- apiGroups:
+  - ''
+  resources:
+  - namespaces
+  verbs:
+  - get
+- apiGroups:
+  - ''
+  - events.k8s.io
+  resources:
+  - events
+  verbs:
+  - list
+  - get
+- apiGroups:
+  - ''
+  resources:
+  - pods
+  - pods/log
+  - persistentvolumeclaims
+  - services
+  - configmaps
+  - endpoints
+  - secrets
+  - serviceaccounts
+  verbs:
+  - '*'
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - '*'
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    torque-cluster-id: dcd6f13d-96d8-46f0-83b1-de01b79bccc5
+  name: torque-cr-b-d22a0e
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: torque-cr-r-d22a0e
+subjects:
+- kind: ServiceAccount
+  name: torque-agent-sa-d22a0e
+  namespace: ophirus-agent
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    torque-cluster-id: dcd6f13d-96d8-46f0-83b1-de01b79bccc5
+  name: torque-nr-b-d22a0e
+  namespace: ophirus-sandboxes
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: torque-nr-r-d22a0e
+subjects:
+- kind: ServiceAccount
+  name: torque-agent-sa-d22a0e
+  namespace: ophirus-agent
+- kind: ServiceAccount
+  name: torque-sidecar-sa-d22a0e
+  namespace: ophirus-sandboxes
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    torque-cluster-id: dcd6f13d-96d8-46f0-83b1-de01b79bccc5
+  name: torque-agent-s-d22a0e
+  namespace: ophirus-agent
+stringData:
+  cluster-token: 46ee9cec-3a5e-4b2f-920f-adb8fe6b0e6b
+  logzio-token: ruNbNOjJuvBwUXeToQttHqKClRqbuCkg
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    torque-cluster-id: dcd6f13d-96d8-46f0-83b1-de01b79bccc5
+  name: torque-agent-rs-d22a0e
+  namespace: ophirus-agent
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      torque-cluster-id: dcd6f13d-96d8-46f0-83b1-de01b79bccc5
+      app: torque-agent
+  template:
+    metadata:
+      labels:
+        torque-cluster-id: dcd6f13d-96d8-46f0-83b1-de01b79bccc5
+        app: torque-agent
+    spec:
+      containers:
+      - env:
+        - name: AgentSettings__LogzioToken
+          valueFrom:
+            secretKeyRef:
+              key: logzio-token
+              name: torque-agent-s-d22a0e
+        - name: AgentSettings__ClusterToken
+          valueFrom:
+            secretKeyRef:
+              key: cluster-token
+              name: torque-agent-s-d22a0e
+        - name: AgentSettings__ClusterId
+          value: dcd6f13d-96d8-46f0-83b1-de01b79bccc5
+        - name: AgentSettings__ServerUrl
+          value: https://portal.qtorque.io/hub/agent
+        - name: AgentSettings__RegistryImage
+          value: quali/kubernetes-agent:1.0.1225
+        image: quali/kubernetes-agent:1.0.1225
+        imagePullPolicy: IfNotPresent
+        name: torque-agent-container
+      serviceAccountName: torque-agent-sa-d22a0e
