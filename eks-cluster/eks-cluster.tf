@@ -23,41 +23,24 @@ module "eks" {
     }
   }
 
- map_roles = [
-    /*{
-      rolearn  = "arn:aws:iam::126030006713:role/Quali_SSO_Colonyci_Colonyusers"
-      username = "PowerUsers"
-      groups   = ["system:masters"]
-    },
-    {
-      rolearn  = "arn:aws:iam::513341655526:role/Quali_Colony_Users"
-      username = "QualiPowerUsers"
-      groups   = ["system:masters"]
-    },
-    {
-      rolearn  = "arn:aws:iam::608322624794:role/Quali_SSO_Colonyci2_colonyusers"
-      username = "QualiPowerUsers"
-      groups   = ["system:masters"]
-    },
-    {
-      rolearn  = "arn:aws:iam::126030006713:role/TC_Agent"
-      username = "PowerUsers"
-      groups   = ["system:masters"]
-    },*/
-    {
+ map_roles = [{
       rolearn  = "arn:aws:iam::799617105972:role/AWSReservedSSO_QualiPowerUsers_98e23796b015111f"
       username = "QualiPowerUsers"
       groups   = ["system:masters"]
     },
-  ] 
-
-  map_users = [
     {
+      rolearn = "arn:aws:iam::799617105972:role/qualidev2-eks2022040515083343910000000b"
+      username = "qualidev2-eks2022040515083343910000000b"
+      groups   = ["system:masters"]
+    }
+    ] 
+
+  map_users = [{
       userarn  = "arn:aws:iam::799617105972:user/cleanser"
       username = "cleanser"
       groups   = ["system:masters"]
     },
-  ]
+    ]
 }
 
 data "aws_eks_cluster" "cluster" {
