@@ -24,7 +24,7 @@ module "eks" {
   }
 
  map_roles = [
-    {
+    /*{
       rolearn  = "arn:aws:iam::126030006713:role/Quali_SSO_Colonyci_Colonyusers"
       username = "PowerUsers"
       groups   = ["system:masters"]
@@ -43,13 +43,13 @@ module "eks" {
       rolearn  = "arn:aws:iam::126030006713:role/TC_Agent"
       username = "PowerUsers"
       groups   = ["system:masters"]
-    },
+    },*/
     {
       rolearn  = "arn:aws:iam::799617105972:role/AWSReservedSSO_QualiPowerUsers_98e23796b015111f"
       username = "QualiPowerUsers"
       groups   = ["system:masters"]
     },
-  ]
+  ] 
 
   map_users = [
     {
