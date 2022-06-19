@@ -67,11 +67,3 @@ data "aws_eks_cluster" "cluster" {
 data "aws_eks_cluster_auth" "cluster" {
   name = module.eks.cluster_id
 }
-
-resource "null_resource" "iam_oidc_provider" {
-  # [condition] ? [true_value] : [false_value]
-  # count = var.manage_aws_auth ? 1 : 0
-  provisioner "local-exec" {
-    command = "eksctl utils associate-iam-oidc-provider --region=${var.aws-region} --cluster=${data.aws_eks_cluster.eks.name} --approve"
-  }
-}
