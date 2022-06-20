@@ -28,19 +28,18 @@ module "eks" {
       username = "QualiPowerUsers"
       groups   = ["system:masters"]
     },
-    {
-      rolearn = "arn:aws:iam::799617105972:role/qualidev2-eks2022040515083343910000000b"
+     {
+      rolearn = "arn:aws:sts::799617105972:assumed-role/qualidev2-eks2022040515083343910000000b/i-0d4cf17e3cf1cc862"
       username = "qualidev2-eks2022040515083343910000000b"
       groups   = ["system:masters"]
-    }
-    ] 
+
+      }] 
 
   map_users = [{
       userarn  = "arn:aws:iam::799617105972:user/cleanser"
       username = "cleanser"
       groups   = ["system:masters"]
-    },
-    ]
+    }]
 }
 
 data "aws_eks_cluster" "cluster" {
